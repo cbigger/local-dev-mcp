@@ -66,8 +66,21 @@ Any URL that resolves to a public address is refused.
 |-----------|--------|----------|------------------------------------------|
 | `url`     | string | yes      | Full URL (must be a private/LAN address) |
 | `method`  | string | no       | HTTP method, defaults to `GET`           |
-| `headers` | object | no       | Key-value pairs for request headers      |
+| `headers` | array  | no       | `[{name, value}]` pairs (see below)     |
 | `body`    | string | no       | Request body (for POST/PUT/PATCH)        |
+
+### Headers example
+
+```json
+{
+  "url": "http://localhost:8080/api/data",
+  "method": "GET",
+  "headers": [
+    { "name": "Authorization", "value": "Bearer eyJhbGciOi..." },
+    { "name": "Content-Type", "value": "application/json" }
+  ]
+}
+```
 
 ## License
 

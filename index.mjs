@@ -101,9 +101,24 @@ const TOOL = {
         description: "HTTP method. Defaults to GET.",
       },
       headers: {
-        type: "object",
-        additionalProperties: { type: "string" },
-        description: "Optional HTTP headers as key-value pairs.",
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              description: "Header name, e.g. 'Authorization', 'Content-Type'.",
+            },
+            value: {
+              type: "string",
+              description: "Header value, e.g. 'Bearer eyJhbG...', 'application/json'.",
+            },
+          },
+          required: ["name", "value"],
+        },
+        description:
+          "Optional HTTP headers. Each entry is a {name, value} pair, " +
+          "e.g. [{\"name\": \"Authorization\", \"value\": \"Bearer tok...\"}].",
       },
       body: {
         type: "string",
@@ -173,7 +188,15 @@ async function handleRequest(req) {
 }
 
 async function doFetch(args) {
-  const { url: rawUrl, method = "GET", headers = {}, body } = args;
+  const { url: rawUrl, method = "GET", headers: headerPairs = [], body } = args;
+
+  // Convert [{name, value}, ...] array to plain header object
+  const headers = {};
+  if (Array.isArray(headerPairs)) {
+    for (const h of headerPairs) {
+      if (h.name) headers[h.name] = h.value;
+    }
+  }
 
   let parsed;
   try {
